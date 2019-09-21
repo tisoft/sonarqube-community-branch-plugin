@@ -22,6 +22,7 @@ import com.github.mc1arke.sonarqube.plugin.ce.pullrequest.PostAnalysisIssueVisit
 import com.github.mc1arke.sonarqube.plugin.ce.pullrequest.PullRequestPostAnalysisTask;
 import com.github.mc1arke.sonarqube.plugin.ce.pullrequest.bitbucket.server.BitbucketServerPullRequestDecorator;
 import com.github.mc1arke.sonarqube.plugin.ce.pullrequest.github.GithubPullRequestDecorator;
+import com.github.mc1arke.sonarqube.plugin.ce.pullrequest.gitlab.GitlabServerPullRequestDecorator;
 import org.sonar.ce.task.projectanalysis.container.ReportAnalysisComponentProvider;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class CommunityReportAnalysisComponentProvider implements ReportAnalysisC
     @Override
     public List<Object> getComponents() {
         return Arrays.asList(CommunityBranchLoaderDelegate.class, PullRequestPostAnalysisTask.class,
-                             PostAnalysisIssueVisitor.class, GithubPullRequestDecorator.class, BitbucketServerPullRequestDecorator.class);
+                             PostAnalysisIssueVisitor.class, GithubPullRequestDecorator.class, BitbucketServerPullRequestDecorator.class, GitlabServerPullRequestDecorator.class);
     }
 
 }

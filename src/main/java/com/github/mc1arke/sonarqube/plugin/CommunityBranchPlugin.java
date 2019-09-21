@@ -43,6 +43,7 @@ public class CommunityBranchPlugin implements Plugin {
     private static final String GENERAL = "General";
     private static final String GITHUB_INTEGRATION_SUBCATEGORY_LABEL = "Integration With Github";
     private static final String BITBUCKET_INTEGRATION_SUBCATEGORY_LABEL = "Integration With Bitbucket";
+    private static final String GITLAB_INTEGRATION_SUBCATEGORY_LABEL = "Integration With Gitlab";
 
 
     @Override
@@ -75,7 +76,7 @@ public class CommunityBranchPlugin implements Plugin {
                 PropertyDefinition.builder("sonar.pullrequest.provider").subCategory(PULL_REQUEST_CATEGORY_LABEL)
                         .subCategory(GENERAL)
                         .onlyOnQualifiers(Qualifiers.PROJECT).name("Provider").type(PropertyType.SINGLE_SELECT_LIST)
-                        .options("Github", "BitbucketServer", "BitbucketCloud").build(),
+                        .options("Github", "BitbucketServer", "BitbucketCloud", "GitlabServer").build(),
 
                 PropertyDefinition.builder("sonar.pullrequest.summary.comment.enabled")
                         .subCategory(PULL_REQUEST_CATEGORY_LABEL)
@@ -172,7 +173,35 @@ public class CommunityBranchPlugin implements Plugin {
                         .name("ProjectKey")
                         .description("This is used for '/projects' repos. Only set one User Slug or ProjectKey!")
                         .type(PropertyType.STRING)
+                        .build(),
+
+                PropertyDefinition.builder("sonar.pullrequest.gitlab.url")
+                        .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                        .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                        .onQualifiers(Qualifiers.PROJECT)
+                        .name("URL for Gitlab (Server or Cloud) instance")
+                        .description("Example: https://ci-server.local/gitlab")
+                        .type(PropertyType.STRING)
+                        .defaultValue("https://gitlab.com")
+                        .build(),
+
+                PropertyDefinition.builder("sonar.pullrequest.gitlab.token")
+                        .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                        .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                        .onQualifiers(Qualifiers.PROJECT)
+                        .name("The token for the user to comment to the PR on Gitlab (Server or Cloud) instance")
+                        .description("Token used for authentication and commenting to your Gitlab instance")
+                        .type(PropertyType.STRING)
+                        .build(),
+
+                PropertyDefinition.builder("sonar.pullrequest.gitlab.repositorySlug")
+                        .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                        .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                        .onQualifiers(Qualifiers.PROJECT)
+                        .name("Repository Slug for the Gitlab (Server or Cloud) instance")
+                        .description("The repository slug can be eiter in the form of user/repo or it can be the Project ID")
+                        .type(PropertyType.STRING)
                         .build()
-                             );
+        );
     }
 }
