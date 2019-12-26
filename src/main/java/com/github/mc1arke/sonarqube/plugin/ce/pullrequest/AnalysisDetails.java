@@ -99,9 +99,7 @@ public class AnalysisDetails {
 
     public String createAnalysisSummary(FormatterFactory formatterFactory) {
 
-        BigDecimal newCoverage =
-                findQualityGateCondition(CoreMetrics.NEW_COVERAGE_KEY).map(QualityGate.Condition::getValue)
-                        .map(BigDecimal::new).orElse(null);
+        BigDecimal newCoverage = getNewCoverage();
 
         double coverage = findMeasure(CoreMetrics.COVERAGE_KEY).map(MeasureWrapper::getDoubleValue).orElse(0D);
 
@@ -170,6 +168,11 @@ public class AnalysisDetails {
         return formatterFactory.documentFormatter().format(document, formatterFactory);
     }
 
+    public BigDecimal getNewCoverage() {
+        return findQualityGateCondition(CoreMetrics.NEW_COVERAGE_KEY).map(QualityGate.Condition::getValue)
+                .map(BigDecimal::new).orElse(null);
+    }
+
     public PostAnalysisIssueVisitor getPostAnalysisIssueVisitor() {
         return postAnalysisIssueVisitor;
     }
@@ -213,6 +216,10 @@ public class AnalysisDetails {
 
     public String getAnalysisId() {
         return analysis.getAnalysisUuid();
+    }
+
+    public Optional<String> getAnalysisRevision() {
+        return analysis.getRevision();
     }
 
     public String getAnalysisProjectKey() {

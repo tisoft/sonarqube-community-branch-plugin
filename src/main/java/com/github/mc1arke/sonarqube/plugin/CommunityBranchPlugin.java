@@ -42,6 +42,7 @@ public class CommunityBranchPlugin implements Plugin, CoreExtension {
 
     private static final String PULL_REQUEST_CATEGORY_LABEL = "Pull Request";
     private static final String GITHUB_INTEGRATION_SUBCATEGORY_LABEL = "Integration With Github";
+    private static final String GITLAB_INTEGRATION_SUBCATEGORY_LABEL = "Integration With Gitlab";
 
     @Override
     public String getName() {
@@ -57,26 +58,26 @@ public class CommunityBranchPlugin implements Plugin, CoreExtension {
                 /* org.sonar.db.purge.PurgeConfiguration uses the value for the this property if it's configured, so it only
                 needs to be specified here, but doesn't need any additional classes to perform the relevant purge/cleanup
                  */
-                PropertyDefinition.builder(PurgeConstants.DAYS_BEFORE_DELETING_INACTIVE_SHORT_LIVING_BRANCHES)
-                                          .name("Number of days before purging inactive short living branches")
-                                          .description(
-                                                  "Short living branches are permanently deleted when there are no analysis for the configured number of days.")
-                                          .category(CoreProperties.CATEGORY_GENERAL)
-                                          .subCategory(CoreProperties.SUBCATEGORY_DATABASE_CLEANER).defaultValue("30")
-                                          .type(PropertyType.INTEGER).build(),
+                    PropertyDefinition.builder(PurgeConstants.DAYS_BEFORE_DELETING_INACTIVE_SHORT_LIVING_BRANCHES)
+                            .name("Number of days before purging inactive short living branches")
+                            .description(
+                                    "Short living branches are permanently deleted when there are no analysis for the configured number of days.")
+                            .category(CoreProperties.CATEGORY_GENERAL)
+                            .subCategory(CoreProperties.SUBCATEGORY_DATABASE_CLEANER).defaultValue("30")
+                            .type(PropertyType.INTEGER).build(),
 
-                                  //the name and description shown on the UI are automatically loaded from core.properties so don't need to be specified here
-                                  PropertyDefinition.builder(CoreProperties.LONG_LIVED_BRANCHES_REGEX)
-                                          .onQualifiers(Qualifiers.PROJECT).category(CoreProperties.CATEGORY_GENERAL)
-                                          .subCategory(CoreProperties.SUBCATEGORY_BRANCHES)
-                                          .defaultValue(CommunityBranchConfigurationLoader.DEFAULT_BRANCH_REGEX).build()
+                    //the name and description shown on the UI are automatically loaded from core.properties so don't need to be specified here
+                    PropertyDefinition.builder(CoreProperties.LONG_LIVED_BRANCHES_REGEX)
+                            .onQualifiers(Qualifiers.PROJECT).category(CoreProperties.CATEGORY_GENERAL)
+                            .subCategory(CoreProperties.SUBCATEGORY_BRANCHES)
+                            .defaultValue(CommunityBranchConfigurationLoader.DEFAULT_BRANCH_REGEX).build()
 
 
-                                 );
+            );
         }
 
         if (SonarQubeSide.COMPUTE_ENGINE == context.getRuntime().getSonarQubeSide() ||
-            SonarQubeSide.SERVER == context.getRuntime().getSonarQubeSide()) {
+                SonarQubeSide.SERVER == context.getRuntime().getSonarQubeSide()) {
             context.addExtensions(
                     PropertyDefinition.builder("sonar.pullrequest.provider").category(PULL_REQUEST_CATEGORY_LABEL)
                             .subCategory("General").onlyOnQualifiers(Qualifiers.PROJECT).name("Provider")
@@ -104,16 +105,43 @@ public class CommunityBranchPlugin implements Plugin, CoreExtension {
                             .category(PULL_REQUEST_CATEGORY_LABEL).subCategory(GITHUB_INTEGRATION_SUBCATEGORY_LABEL)
                             .onQualifiers(Qualifiers.APP).name("The API URL for a GitHub instance").description(
                             "The API url for a GitHub instance. https://api.github.com/ for github.com, https://github.company.com/api/ when using GitHub Enterprise")
-                            .type(PropertyType.STRING).defaultValue("https://api.github.com").build());
-        }
+                            .type(PropertyType.STRING).defaultValue("https://api.github.com").build(),
 
+                    PropertyDefinition.builder("sonar.pullrequest.gitlab.url")
+                            .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                            .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                            .onQualifiers(Qualifiers.PROJECT)
+                            .name("URL for Gitlab (Server or Cloud) instance")
+                            .description("Example: https://ci-server.local/gitlab")
+                            .type(PropertyType.STRING)
+                            .defaultValue("https://gitlab.com")
+                            .build(),
+
+                    PropertyDefinition.builder("sonar.pullrequest.gitlab.token")
+                            .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                            .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                            .onQualifiers(Qualifiers.PROJECT)
+                            .name("The token for the user to comment to the PR on Gitlab (Server or Cloud) instance")
+                            .description("Token used for authentication and commenting to your Gitlab instance")
+                            .type(PropertyType.STRING)
+                            .build(),
+
+                    PropertyDefinition.builder("sonar.pullrequest.gitlab.repositorySlug")
+                            .subCategory(PULL_REQUEST_CATEGORY_LABEL)
+                            .subCategory(GITLAB_INTEGRATION_SUBCATEGORY_LABEL)
+                            .onQualifiers(Qualifiers.PROJECT)
+                            .name("Repository Slug for the Gitlab (Server or Cloud) instance")
+                            .description("The repository slug can be eiter in the form of user/repo or it can be the Project ID")
+                            .type(PropertyType.STRING)
+                            .build());
+        }
     }
 
     @Override
     public void define(Plugin.Context context) {
         if (SonarQubeSide.SCANNER == context.getRuntime().getSonarQubeSide()) {
             context.addExtensions(CommunityProjectBranchesLoader.class, CommunityProjectPullRequestsLoader.class,
-                                  CommunityBranchConfigurationLoader.class, CommunityBranchParamsValidator.class);
+                    CommunityBranchConfigurationLoader.class, CommunityBranchParamsValidator.class);
         }
     }
 }
